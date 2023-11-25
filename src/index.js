@@ -100,7 +100,26 @@ function Pizza({data: pizza}){
   </li>
 }
 
-function PizzaListItem({name, image, price, quantity}){
+function PizzaListItem({name, image, price, quantity, cart, updateCart}){
+  
+  const decreaseItem = (args) => {  
+    const [pizzaName] = args;
+    let updatedCart = [...cart];
+    const pizzaIndex = updatedCart.findIndex(pizza => pizza.name === pizzaName);
+    updatedCart[pizzaIndex].quantity -= 1;
+
+    if(updatedCart[pizzaIndex].quantity <= 0) updatedCart.splice(pizzaIndex, 1);
+    updateCart(updatedCart);
+  }
+
+  const increaseItem = (args) => {
+    const [pizzaName] = args;
+    let updatedCart = [...cart];
+    const pizzaIndex = updatedCart.findIndex(pizza => pizza.name === pizzaName);
+    updatedCart[pizzaIndex].quantity += 1;
+    updateCart(updatedCart);
+  }
+
   return(
     <tr className="pizzaListItem">
     <td className="pizzaListItem__name">
@@ -110,9 +129,9 @@ function PizzaListItem({name, image, price, quantity}){
     <td className="pizzaListItem__price">{price}</td>
     <td className="pizzaListItem__totalprice">{price * quantity}</td>
     <td className="pizzaListItem__quantity">
-      <span className="pizzaListItem__quantity--negative">-</span>
+      <span className="pizzaListItem__quantity--negative" onClick={decreaseItem.bind(this, [name])}>-</span>
       <span className="pizzaListItem__quantity--number">{quantity}</span>
-      <span className="pizzaListItem__quantity--positive">+</span>
+      <span className="pizzaListItem__quantity--positive" onClick={increaseItem.bind(this, [name])}>+</span>
     </td>
   </tr>
   )
@@ -135,15 +154,25 @@ function OrderForm({closeFormFunction}){
   function addToCart(){
     const selectInput = document.querySelector(".orderform__pizzas > select")
     const selectedPizza = selectInput.options[selectInput.selectedIndex].value;
+
     // check if food already exists in the cart
     let index = cart.findIndex(pizza => pizza.name === selectedPizza);
+    
     // If element already exists, update the quantity by 1
     if(index !== -1){
-      let pizza = cart[index];
-      pizza.quantity += 1;
-      cart[index] = pizza;
-      setCart(cart => [...cart]);
+      const updatedCart = cart.map((pizza, idx) => {
+        if (idx === index) {
+          return {
+            ...pizza,
+            quantity: pizza.quantity + 1,
+          };
+        }
+        return pizza;
+      });
+
+      setCart(updatedCart);
     } else {
+    
     // Add The Element from drop down to cart
     const pizza = pizzaData.find(pizza => pizza.name === selectedPizza);
     pizza.quantity = 1;
@@ -151,6 +180,18 @@ function OrderForm({closeFormFunction}){
     }
   }
 
+  // Function
+    // Pass down the function, along with cart, to the component
+    // Component does changes to the cart items
+      // the updated cart is then passed as argument to the function
+      // The function then handles the state of the cart in the parent component
+
+  // The problem with the previous code seems to be with component update. 
+  // I Will need to see how React re renders components
+
+  function updateCartFunction(updatedCart){
+    setCart(updatedCart);
+  }
 
 
   return <>
@@ -188,7 +229,9 @@ function OrderForm({closeFormFunction}){
               name={pizza.name} 
               image={pizza.photoName} 
               price={pizza.price} 
-              quantity={pizza.quantity}/>
+              quantity={pizza.quantity}
+              cart={cart}
+              updateCart={updateCartFunction}/>
             )
         }
       </table>

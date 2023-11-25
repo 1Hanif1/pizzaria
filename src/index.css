@@ -189,7 +189,7 @@ body {
 
 .orderform{
   position: absolute;
-  top: 20%;
+  top: 5rem;
   left: 50%;
   transform: translateX(-50%);
 
@@ -305,6 +305,20 @@ body {
   margin-right: 1rem;
 }
 
+.pizzaListItem__quantity span{
+  display: block;
+}
+
+.pizzaListItem__quantity {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pizzaListItem__quantity--number{
+  margin-inline: 1rem;
+}
+
 .orderform__pizzalist--total span{
   padding: 1.5rem 4rem;
   background-color:#e9bb24;
@@ -313,9 +327,26 @@ body {
   cursor: pointer;
 }
 
+.pizzaListItem__quantity--negative,
+.pizzaListItem__quantity--positive{
+  background-color: #edc84b;
+  color: white;
+  border-radius: 50%;
+  width: 2.8rem;
+  height: 2.8rem;
+  text-align: center;
+  cursor: pointer;
+
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
+
 .orderform__pizzalist--total span:hover{
   background-color:#edc84b;
 }
+
+
 
 /*
 SPACING SYSTEM (px)
